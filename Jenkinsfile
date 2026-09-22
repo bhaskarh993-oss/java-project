@@ -34,7 +34,7 @@ pipeline {
             steps {
                 sh 'docker build -t java-app:${BUILD_NUMBER} .'
             }
-        }
+       }
 
         stage('Deploy') {
             steps {
