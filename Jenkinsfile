@@ -30,6 +30,12 @@ pipeline {
             }
         }
 
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t java-app:${BUILD_NUMBER} .'
+            }
+        }
+
         stage('Deploy') {
             steps {
                 echo 'Deploying Java application...'
