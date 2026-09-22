@@ -16,6 +16,6 @@ spec:
         - name: ecr-secret
       containers:
         - name: java-app
-          image: 621662900911.dkr.ecr.ap-south-1.amazonaws.com/java-app:6
+          image: 621662900911.dkr.ecr.ap-south-1.amazonaws.com/java-app:IMAGE_TAG
           ports:
             - containerPort: 8080
