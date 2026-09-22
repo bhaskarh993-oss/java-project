@@ -7,7 +7,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/YOUR-USERNAME/YOUR-REPO.git'
+                    url: 'https://github.com/bhaskarh993-oss/java-project.git'
             }
         }
 
