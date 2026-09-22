@@ -35,9 +35,20 @@ pipeline {
                 sh 'docker build -t java-app:${BUILD_NUMBER} .'
             }
        }
+	
+	stage('Trivy Scan') {
+ 	   steps {
+        	sh '''
+            	trivy image \
+            	--severity HIGH,CRITICAL \
+            	--exit-code 1 \
+            	java-app:${BUILD_NUMBER}
+        	'''
+    	   }
+	}
 
-		stage('Push to ECR') {
- 		   steps {
+	stage('Push to ECR') {
+ 	    steps {
        		 sh '''
            	 aws ecr get-login-password --region ap-south-1 | \
            	 docker login --username AWS --password-stdin \
