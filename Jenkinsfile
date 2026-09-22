@@ -54,10 +54,18 @@ pipeline {
     		}
 	}
 
-        stage('Deploy') {
-            steps {
-                echo 'Deploying Java application...'
-            }
-        }
+		stage('Deploy to Kubernetes') {
+    steps {
+        sh '''
+            sed -i "s/IMAGE_TAG/${BUILD_NUMBER}/g" deployment.yaml
+
+            kubectl apply -f deployment.yaml
+            kubectl apply -f service.yaml
+
+            kubectl rollout status deployment/java-app
+        '''
+    }
+}
+       
     }
 }
