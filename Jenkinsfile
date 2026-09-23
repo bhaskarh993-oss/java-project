@@ -53,28 +53,27 @@ pipeline {
        		 '''
     		}
 	}
-stage('Deploy to Kubernetes') {
+		stage('Deploy to Kubernetes') {
     steps {
         sshagent(['kind-server']) {
             sh '''
                 scp -o StrictHostKeyChecking=no \
                     deployment.yaml \
                     service.yaml \
-                    root@172.31.2.160:/root/
+                    ubuntu@172.31.2.160:/home/ubuntu/
 
                 ssh -o StrictHostKeyChecking=no \
-                    root@172.31.2.160 "
-                        sed -i 's/IMAGE_TAG/${BUILD_NUMBER}/g' /root/deployment.yaml
-
-                        kubectl apply -f /root/deployment.yaml
-                        kubectl apply -f /root/service.yaml
-
+                    ubuntu@172.31.2.160 "
+                        sed -i 's/IMAGE_TAG/${BUILD_NUMBER}/g' /home/ubuntu/deployment.yaml
+                        kubectl apply -f /home/ubuntu/deployment.yaml
+                        kubectl apply -f /home/ubuntu/service.yaml
                         kubectl rollout status deployment/java-app
                     "
             '''
         }
     }
 }
+
 	
        
     }
