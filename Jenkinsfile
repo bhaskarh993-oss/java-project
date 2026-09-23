@@ -54,18 +54,31 @@ pipeline {
     		}
 	}
 
-		stage('Deploy to Kubernetes') {
-    steps {
-        sh '''
-            sed -i "s/IMAGE_TAG/${BUILD_NUMBER}/g" deployment.yaml
+			stage('Deploy to Kubernetes') {
+    		steps {
+        		sh '''
+            scp -i /root/k8skey.pem \
+                -o StrictHostKeyChecking=no \
+                deployment.yaml \
+                service.yaml \
+                root@172.31.2.160:/root/
 
-            kubectl apply -f deployment.yaml
-            kubectl apply -f service.yaml
+            ssh -i /root/k8skey.pem \
+                -o StrictHostKeyChecking=no \
+                root@172.31.2.160 "
+                
+                sed -i 's/IMAGE_TAG/${BUILD_NUMBER}/g' \
+                /root/deployment.yaml
 
-            kubectl rollout status deployment/java-app
-        '''
-    }
-}
+                kubectl apply -f /root/deployment.yaml
+
+                kubectl apply -f /root/service.yaml
+
+                kubectl rollout status deployment/java-app
+            "
+        	'''
+		    }
+		}
        
     }
 }
