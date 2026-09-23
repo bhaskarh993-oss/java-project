@@ -53,32 +53,29 @@ pipeline {
        		 '''
     		}
 	}
+stage('Deploy to Kubernetes') {
+    steps {
+        sshagent(['k8s-server-key']) {
+            sh '''
+                scp -o StrictHostKeyChecking=no \
+                    deployment.yaml \
+                    service.yaml \
+                    root@172.31.2.160:/root/
 
-			stage('Deploy to Kubernetes') {
-    		steps {
-        		sh '''
-            scp -i /root/k8skey.pem \
-                -o StrictHostKeyChecking=no \
-                deployment.yaml \
-                service.yaml \
-                root@172.31.2.160:/root/
+                ssh -o StrictHostKeyChecking=no \
+                    root@172.31.2.160 "
+                        sed -i 's/IMAGE_TAG/${BUILD_NUMBER}/g' /root/deployment.yaml
 
-            ssh -i /root/k8skey.pem \
-                -o StrictHostKeyChecking=no \
-                root@172.31.2.160 "
-                
-                sed -i 's/IMAGE_TAG/${BUILD_NUMBER}/g' \
-                /root/deployment.yaml
+                        kubectl apply -f /root/deployment.yaml
+                        kubectl apply -f /root/service.yaml
 
-                kubectl apply -f /root/deployment.yaml
-
-                kubectl apply -f /root/service.yaml
-
-                kubectl rollout status deployment/java-app
-            "
-        	'''
-		    }
-		}
+                        kubectl rollout status deployment/java-app
+                    "
+            '''
+        }
+    }
+}
+	
        
     }
 }
