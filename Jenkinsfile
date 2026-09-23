@@ -55,7 +55,7 @@ pipeline {
 	}
 stage('Deploy to Kubernetes') {
     steps {
-        sshagent(['k8s-server-key']) {
+        sshagent(['kind-service']) {
             sh '''
                 scp -o StrictHostKeyChecking=no \
                     deployment.yaml \
