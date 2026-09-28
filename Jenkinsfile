@@ -53,21 +53,30 @@ pipeline {
        		 '''
     		}
 	}
-		stage('Deploy to Kubernetes') {
+		 
+        stage('Deploy to Kubernetes') {
     steps {
         sshagent(['kind-server']) {
             sh '''
                 scp -o StrictHostKeyChecking=no \
                     deployment.yaml \
                     service.yaml \
+                    ingress.yaml \
                     ubuntu@172.31.2.160:/home/ubuntu/
 
                 ssh -o StrictHostKeyChecking=no \
                     ubuntu@172.31.2.160 "
                         sed -i 's/IMAGE_TAG/${BUILD_NUMBER}/g' /home/ubuntu/deployment.yaml
+
                         kubectl apply -f /home/ubuntu/deployment.yaml
                         kubectl apply -f /home/ubuntu/service.yaml
+                        kubectl apply -f /home/ubuntu/ingress.yaml
+
                         kubectl rollout status deployment/java-app
+
+                        kubectl get pods
+                        kubectl get svc
+                        kubectl get ingress
                     "
             '''
         }
